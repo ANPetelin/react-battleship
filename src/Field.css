@@ -1,0 +1,23 @@
+  .field {
+    border-spacing: 0px;
+    
+  }
+  .field td {
+    width: 30px;
+    height: 30px;
+    border: 1px solid black;
+    text-align: center;
+    background-color: lightskyblue;
+  }
+
+  .field td.ship {
+      background-color: gray;
+  }
+
+  .field td.attacked {
+    background-color: red;
+  }
+
+  .field td.destroyed {
+      background-color: black;
+  }
