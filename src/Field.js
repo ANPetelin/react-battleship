@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './Field.css'
 
-function GetTable (width, height, onShot, shots, ships, isProtectView) {
+function GetTable (width, height, onShot, shots, ships, isProtectView, onLose, onMoveShip) {
+    useEffect (() => {
+        if (isGameOver) onLose();
+    });
     const isPoint = (point, i, j) => point[0] === i && point[1] === j;
     let rows = [];
     for (let i = 0; i < width; i++) {
@@ -10,32 +13,43 @@ function GetTable (width, height, onShot, shots, ships, isProtectView) {
         for (let j = 0; j < height; j++) {
             let cls;
             const isShip = ships.some(s => s.some(p => isPoint(p, i, j)));
+            let isAttacked = false;
             if (isShip) {
-                const isAttacked = shots.some(s => isPoint(s, i, j));                
+                isAttacked = shots.some(s => isPoint(s, i, j));                
                 if (isAttacked) {
-                    const isDestroyed = ships.some(ship => ship.some(point=>(isPoint(point, i, j)))&&ship.every(point=>shots.some(shot=>point[0] === shot[0] && point[1] === shot[1])))
-                    if (isDestroyed) 
-                        cls = 'destroyed';
-                    else 
-                        cls = 'attacked';
+                    const isDestroyed = ships.some(ship => ship.some(point=>(isPoint(point, i, j))) && 
+                    ship.every(point => shots.some(shot => point[0] === shot[0] && point[1] === shot[1])))
+                    cls = isDestroyed ? 'destroyed' : 'attacked';                                  
                 } 
                 else cls = isProtectView ? '' : 'ship';
             }
             const newCell = 
-                (<td key = {j} className = {cls} onClick = {() => onShot(i, j)}>
-                    {shots.some(s => isPoint(s, i, j)) ? '●' : ''}
+                (<td key = {j} className = {cls} 
+                    onClick = {() => onShot(i, j)}
+                    onMouseOver={() => onMoveShip(i, j)}>
+                        {shots.some(s => isPoint(s, i, j)) && isAttacked ? '🔥' :
+                        shots.some(s => isPoint(s, i, j)) ? '●' : ''}
                 </td>);
-            cells.push(newCell);
+            cells.push(newCell);          
         }
         rows.push(<tr key = {i}>{cells}</tr>)
     }
+    // Вычисляем все ли корабли подбиты.
+    let isGameOver = ships.every(ship => ship.every(point => shots.some(s => s[0] === point[0] && s[1] === point[1])));          
     return <table className = 'field'><tbody>{rows}</tbody></table>;
 }
 
 function Field (props) {
     return (
         <div>
-            {GetTable(props.width, props.height, props.onShot, props.shots, props.ships, props.isProtectView)}
+            {GetTable(props.width, 
+                        props.height, 
+                        props.onShot, 
+                        props.shots, 
+                        props.ships,
+                        props.isProtectView, 
+                        props.onLose,                        
+                        props.onMoveShip )}
         </div>
     );
 }
@@ -48,6 +62,6 @@ Field.propTypes = {
 Field.defaultProps = {
     width: 10,
     height: 10,
-    isProtectView: true
+    isProtectView: false
 }
 export default Field;
