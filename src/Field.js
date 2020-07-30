@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './Field.css'
 
-function GetTable (width, height, onShot, shots, ships, isProtectView, onLose, onMoveShip) {
+function GetTable (gameOn, width, height, onShot, shots, ships, isProtectView, onLose, onMoveShip, installShip, turnShip) {
     useEffect (() => {
         if (isGameOver) onLose();
     });
@@ -25,8 +25,9 @@ function GetTable (width, height, onShot, shots, ships, isProtectView, onLose, o
             }
             const newCell = 
                 (<td key = {j} className = {cls} 
-                    onClick = {() => onShot(i, j)}
-                    onMouseOver={() => onMoveShip(i, j)}>
+                    onClick = {() => gameOn ? onShot(i, j) : installShip()}
+                    onMouseOver = {() => onMoveShip(i, j)}
+                    onDoubleClick ={() =>turnShip()} >
                         {shots.some(s => isPoint(s, i, j)) && isAttacked ? '🔥' :
                         shots.some(s => isPoint(s, i, j)) ? '●' : ''}
                 </td>);
@@ -42,14 +43,17 @@ function GetTable (width, height, onShot, shots, ships, isProtectView, onLose, o
 function Field (props) {
     return (
         <div>
-            {GetTable(props.width, 
+            {GetTable(props.gameOn,
+                        props.width, 
                         props.height, 
                         props.onShot, 
                         props.shots, 
                         props.ships,
                         props.isProtectView, 
                         props.onLose,                        
-                        props.onMoveShip )}
+                        props.onMoveShip,
+                        props.installShip,
+                        props.turnShip )}
         </div>
     );
 }
