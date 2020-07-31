@@ -26,8 +26,11 @@ function GetTable (gameOn, width, height, onShot, shots, ships, isProtectView, o
             const newCell = 
                 (<td key = {j} className = {cls} 
                     onClick = {() => gameOn ? onShot(i, j) : installShip()}
-                    onMouseOver = {() => onMoveShip(i, j)}
-                    onDoubleClick ={() =>turnShip()} >
+                    onMouseOver = {() => gameOn ? null : onMoveShip(i, j)}
+                    onContextMenu ={(e) => {
+                        e.preventDefault();
+                        gameOn ? null : turnShip();
+                    }} >
                         {shots.some(s => isPoint(s, i, j)) && isAttacked ? '🔥' :
                         shots.some(s => isPoint(s, i, j)) ? '●' : ''}
                 </td>);
