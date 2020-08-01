@@ -28,7 +28,7 @@ class App extends React.Component {
   }
   onLose() {
     if (this.state.playerOne) {
-      console.log('Игрок проиграл');
+      alert('Игрок проиграл');
       this.setState({ playerOne: false })
     }
   }

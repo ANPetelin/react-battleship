@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import './Field.css'
+import './Field.css';
 
 function GetTable (gameOn, width, height, onShot, shots, ships, isProtectView, onLose, onMoveShip, installShip, turnShip) {
-    useEffect (() => {
-        if (isGameOver) onLose();
-    });
+    // useEffect (() => {
+    //     isGameOver && shots.length ? onLose() : null;
+    // });
     const isPoint = (point, i, j) => point[0] === i && point[1] === j;
     let rows = [];
     for (let i = 0; i < width; i++) {
