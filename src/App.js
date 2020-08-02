@@ -214,7 +214,8 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className = "battleship_field">
+        <div>
         <h3>Поле игрока</h3>
         <Field
           gameOn={this.state.gameOn}
@@ -227,7 +228,8 @@ class App extends React.Component {
           turnShip={this.turnShip.bind(this)}
           isProtectView={this.state.isProtectView}
         />
-        <br></br>
+        </div>
+        <div>
         <h3>Поле Компютера</h3>
         <Field
           gameOn={this.state.gameOn}
@@ -240,11 +242,14 @@ class App extends React.Component {
           turnShip={this.turnShip.bind(this)}
           isProtectView={true}
         />
-        <div><button onClick={() => this.arrangeShipsRandom.bind(this)(true)}>
-          Расставить корабли автоматически</button></div>
-        <br></br>
-        <div><button onClick={this.start.bind(this)}>
-          Старт</button></div>
+        </div>
+        <div className = "button">
+        {this.state.gameOn ? <h1 class="display-4 font-italic">Игра!!!</h1> :
+          <div><div><button type="button" className="btn btn-outline-success" onClick={() => this.arrangeShipsRandom.bind(this)(true)}>
+            Расставить корабли автоматически</button></div>
+            <br></br>
+            <div><button type="button" className="btn btn-outline-danger" onClick={this.start.bind(this)}>
+              Старт</button></div></div>}</div>
       </div>
     );
   }

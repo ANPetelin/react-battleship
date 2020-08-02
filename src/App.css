@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+.battleship_field {
+  display: grid;
+  grid-template-columns: 40% 40%;
+  grid-gap: 1em;
+}
+
+.button {
+  margin: 10px;
+  text-align: center;
+  grid-column: 1/3;
+}
