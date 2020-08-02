@@ -8,6 +8,7 @@
     border: 1px solid black;
     text-align: center;
     background-color: lightskyblue;
+    cursor: crosshair;
   }
 
   .field td.ship {
