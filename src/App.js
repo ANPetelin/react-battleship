@@ -15,20 +15,58 @@ class App extends React.Component {
       shots: [],
       playerOne: true,
       countShips: 0,
-      horizontShip: true, 
-      isProtectView: null
+      horizontShip: true,
+      isProtectView: null,
+      shipsComp: [],
+      shotsComp: [],
+      playerTurn: true
     }
   }
   onShot(i, j) {
-    if (this.state.playerOne) {
-      this.setState({ shots: this.state.shots.concat([[i, j]]) });
+    if (this.state.playerOne && this.state.playerTurn) {
+      let newShot = [i, j];
+      let newShots = this.state.shots.concat([newShot]);
+      if (this.state.shots.some(s => s[0] === newShot[0] && s[1] === newShot[1]))
+        alert('выстрел не защитан');
+      else {
+        let hit = false;
+        for (let i = 0; i < this.state.shipsComp.length; i++) {
+          if (this.state.shipsComp[i].some(s => s[0] === newShot[0] && s[1] === newShot[1])) {
+            hit = true;
+            if (this.state.shipsComp[i].
+              every(s => newShots.some(sh => sh[0] === s[0] && sh[1] === s[1]))) {
+              let newShots2 = this.state.shots;
+              for (let j = 0; j < this.state.shipsComp[i].length; j++) {
+                let item = this.state.shipsComp[i][j];
+                let newShot1 = [item[0] + 1, item[1]];
+                let newShot2 = [item[0] - 1, item[1]];
+                let newShot3 = [item[0], item[1] + 1];
+                let newShot4 = [item[0], item[1] - 1];
+                let newShot5 = [item[0] + 1, item[1] + 1];
+                let newShot6 = [item[0] - 1, item[1] - 1];
+                let newShot7 = [item[0] + 1, item[1] - 1];
+                let newShot8 = [item[0] - 1, item[1] + 1];
+                newShots2 = newShots2.concat([newShot], [newShot1], [newShot2], [newShot3], [newShot4], [newShot5], [newShot6], [newShot7], [newShot8]);
+              }
+              this.setState({ shots: newShots2 });
+            }
+            else {
+              this.setState({ shots: newShots });
+            }
+          }
+        }
+        if (!hit) {
+          this.setState({ shots: newShots, playerTurn: false });
+          setTimeout(() => this.shotComp(), 1000);
+        }
+      }
     }
-    else
+    else if (!this.state.playerOne)
       alert('Игрок не может стрелять');
   }
   onLose() {
     if (this.state.playerOne) {
-      alert('Игрок проиграл');
+      this.state.playerTurn ? alert('Победа!') : alert('Вы проиграли!');
       this.setState({ playerOne: false })
     }
   }
@@ -80,8 +118,8 @@ class App extends React.Component {
     }
   }
 
-  arrangeShipsRandom() {
-    let newShipsRandom = this.state.ships.slice();
+  arrangeShipsRandom(props) {
+    let newShipsRandom = this.state.ships.map(s => s.map(p => p.slice()));
     let newArrayShips = [];
     for (let i = 0; i < newShipsRandom.length; i++) {
       let direction = Math.random();
@@ -106,8 +144,8 @@ class App extends React.Component {
       newArrayShips.forEach(item => {
         item.forEach(item2 => {
           if (newShipsRandom[i].some
-            (j => (j[0] >= item2[0] - 1 && j[0] <= item2[0] + 1) && 
-            (j[1] >= item2[1] - 1 && j[1] <= item2[1] + 1))) {
+            (j => (j[0] >= item2[0] - 1 && j[0] <= item2[0] + 1) &&
+              (j[1] >= item2[1] - 1 && j[1] <= item2[1] + 1))) {
             proximity = true;
           }
         })
@@ -115,18 +153,73 @@ class App extends React.Component {
       if (fellOut || proximity) --i;
       else newArrayShips = newArrayShips.concat([newShipsRandom[i]]);
     }
-    this.setState({ shipsPlayerOne: newArrayShips });
+    if (props) {
+      this.setState({ shipsPlayerOne: newArrayShips });
+    }
+    else {
+      this.setState({ shipsComp: newArrayShips });
+    }
   }
-  start () {
-    this.setState({ gameOn: true, isProtectView: true, playerOne: true });
+  start() {
+    this.arrangeShipsRandom(false);
+    this.setState({ gameOn: true, playerOne: true });
   }
+
+  shotComp() {
+    let newShot = [Math.floor(Math.random() * 10), Math.floor(Math.random() * 10)];
+    let proximity = false;
+    this.state.shotsComp.forEach(shots => {
+      if (newShot[0] === shots[0] && newShot[1] === shots[1]) {
+        proximity = true;
+      }
+    });
+    if (proximity) {
+      this.shotComp();
+    }
+    else {
+      let newShots = this.state.shotsComp.concat([newShot]);
+      let hit = false;
+      for (let i = 0; i < this.state.shipsPlayerOne.length; i++) {
+        if (this.state.shipsPlayerOne[i].some(s => s[0] === newShot[0] && s[1] === newShot[1])) {
+          hit = true;
+          if (this.state.shipsPlayerOne[i].
+            every(s => newShots.some(sh => sh[0] === s[0] && sh[1] === s[1]))) {
+            let newShots2 = this.state.shotsComp;
+            for (let j = 0; j < this.state.shipsPlayerOne[i].length; j++) {
+              let item = this.state.shipsPlayerOne[i][j];
+              let newShot1 = [item[0] + 1, item[1]];
+              let newShot2 = [item[0] - 1, item[1]];
+              let newShot3 = [item[0], item[1] + 1];
+              let newShot4 = [item[0], item[1] - 1];
+              let newShot5 = [item[0] + 1, item[1] + 1];
+              let newShot6 = [item[0] - 1, item[1] - 1];
+              let newShot7 = [item[0] + 1, item[1] - 1];
+              let newShot8 = [item[0] - 1, item[1] + 1];
+              newShots2 = newShots2.concat([newShot], [newShot1], [newShot2], [newShot3], [newShot4], [newShot5], [newShot6], [newShot7], [newShot8]);
+            }
+            this.setState({ shotsComp: newShots2 });
+            setTimeout(() => this.shotComp(), 800);
+          }
+          else {
+            this.setState({ shotsComp: newShots });
+            setTimeout(() => this.shotComp(), 800);
+          }
+        }
+      }
+      if (!hit) {
+        this.setState({ shotsComp: newShots, playerTurn: true });
+      }
+    }
+  }
+
   render() {
     return (
       <div>
+        <h3>Поле игрока</h3>
         <Field
           gameOn={this.state.gameOn}
           onShot={this.onShot.bind(this)}
-          shots={this.state.shots}
+          shots={this.state.shotsComp}
           ships={this.state.shipsPlayerOne}
           onLose={this.onLose.bind(this)}
           onMoveShip={this.onMoveShip.bind(this)}
@@ -135,9 +228,21 @@ class App extends React.Component {
           isProtectView={this.state.isProtectView}
         />
         <br></br>
-        <div><button onClick={this.arrangeShipsRandom.bind(this)}>
+        <h3>Поле Компютера</h3>
+        <Field
+          gameOn={this.state.gameOn}
+          onShot={this.onShot.bind(this)}
+          shots={this.state.shots}
+          ships={this.state.shipsComp}
+          onLose={this.onLose.bind(this)}
+          onMoveShip={this.onMoveShip.bind(this)}
+          installShip={this.installShip.bind(this)}
+          turnShip={this.turnShip.bind(this)}
+          isProtectView={true}
+        />
+        <div><button onClick={() => this.arrangeShipsRandom.bind(this)(true)}>
           Расставить корабли автоматически</button></div>
-          <br></br>
+        <br></br>
         <div><button onClick={this.start.bind(this)}>
           Старт</button></div>
       </div>

@@ -20,7 +20,7 @@ function GetTable(gameOn, width, height, onShot, shots, ships, isProtectView, on
                 isAttacked = shots.some(s => isPoint(s, i, j));
                 if (isAttacked) {
                     const isDestroyed = ships.some(ship => ship.some(point => (isPoint(point, i, j))) &&
-                        ship.every(point => shots.some(shot => point[0] === shot[0] && point[1] === shot[1])))
+                        ship.every(point => shots.some(shot => point[0] === shot[0] && point[1] === shot[1])));
                     cls = isDestroyed ? 'destroyed' : 'attacked';
                 }
                 else cls = isProtectView ? '' : 'ship';
