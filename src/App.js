@@ -13,7 +13,7 @@ class App extends React.Component {
       [[,]], [[,]], [[,]], [[,]]],
       shipsPlayerOne: [],
       shots: [],
-      playerOne: true,
+      playerOne: null,
       countShips: 0,
       horizontShip: true,
       isProtectView: null,
@@ -154,15 +154,17 @@ class App extends React.Component {
       else newArrayShips = newArrayShips.concat([newShipsRandom[i]]);
     }
     if (props) {
-      this.setState({ shipsPlayerOne: newArrayShips });
+      this.setState({ shipsPlayerOne: newArrayShips, playerOne: true });
     }
     else {
       this.setState({ shipsComp: newArrayShips });
     }
   }
   start() {
-    this.arrangeShipsRandom(false);
-    this.setState({ gameOn: true, playerOne: true });
+    if (this.state.playerOne) {
+      this.arrangeShipsRandom(false);
+      this.setState({ gameOn: true, playerOne: true });
+    }
   }
 
   shotComp() {
@@ -212,44 +214,75 @@ class App extends React.Component {
     }
   }
 
+  onSave() {
+    let method = true;
+    let key = 'saveBattleShipGame';
+    let data = JSON.stringify({
+      shipsPlayerOne: this.state.shipsPlayerOne,
+      shots: this.state.shots,
+      playerOne: this.state.playerOne,
+      shipsComp: this.state.shipsComp,
+      shotsComp: this.state.shotsComp
+    });
+    this.props.onSave(method, key, data);
+  }
+
+  onContinue() {
+    let method = false;
+    let key = 'saveBattleShipGame';
+    this.props.onSave(method, key)
+    let saveGame = JSON.parse(this.props.onSave(method, key));
+    this.setState({
+      shipsPlayerOne: saveGame.shipsPlayerOne,
+      shots: saveGame.shots,
+      playerOne: saveGame.playerOne,
+      shipsComp: saveGame.shipsComp,
+      shotsComp: saveGame.shotsComp,
+      gameOn: true
+    });
+  }
+
   render() {
     return (
-      <div className = "battleship_field">
+      <div className="battleship_field">
         <div>
-        <h3>Поле игрока</h3>
-        <Field
-          gameOn={this.state.gameOn}
-          onShot={this.onShot.bind(this)}
-          shots={this.state.shotsComp}
-          ships={this.state.shipsPlayerOne}
-          onLose={this.onLose.bind(this)}
-          onMoveShip={this.onMoveShip.bind(this)}
-          installShip={this.installShip.bind(this)}
-          turnShip={this.turnShip.bind(this)}
-          isProtectView={this.state.isProtectView}
-        />
+          <h3>Поле игрока</h3>
+          <Field
+            gameOn={this.state.gameOn}
+            onShot={this.onShot.bind(this)}
+            shots={this.state.shotsComp}
+            ships={this.state.shipsPlayerOne}
+            onLose={this.onLose.bind(this)}
+            onMoveShip={this.onMoveShip.bind(this)}
+            installShip={this.installShip.bind(this)}
+            turnShip={this.turnShip.bind(this)}
+            isProtectView={this.state.isProtectView}
+          />
         </div>
         <div>
-        <h3>Поле Компютера</h3>
-        <Field
-          gameOn={this.state.gameOn}
-          onShot={this.onShot.bind(this)}
-          shots={this.state.shots}
-          ships={this.state.shipsComp}
-          onLose={this.onLose.bind(this)}
-          onMoveShip={this.onMoveShip.bind(this)}
-          installShip={this.installShip.bind(this)}
-          turnShip={this.turnShip.bind(this)}
-          isProtectView={true}
-        />
+          <h3>Поле Компютера</h3>
+          <Field
+            gameOn={this.state.gameOn}
+            onShot={this.onShot.bind(this)}
+            shots={this.state.shots}
+            ships={this.state.shipsComp}
+            onLose={this.onLose.bind(this)}
+            onMoveShip={this.onMoveShip.bind(this)}
+            installShip={this.installShip.bind(this)}
+            turnShip={this.turnShip.bind(this)}
+            isProtectView={true}
+          />
         </div>
-        <div className = "button">
-        {this.state.gameOn ? <h1 class="display-4 font-italic">Игра!!!</h1> :
-          <div><div><button type="button" className="btn btn-outline-success" onClick={() => this.arrangeShipsRandom.bind(this)(true)}>
-            Расставить корабли автоматически</button></div>
-            <br></br>
-            <div><button type="button" className="btn btn-outline-danger" onClick={this.start.bind(this)}>
-              Старт</button></div></div>}</div>
+        <div className="button">
+          {this.state.gameOn ? <div><h1 className="display-4 font-italic">Игра!!!</h1>
+            <button type="button" className="btn btn-outline-success" onClick={this.onSave.bind(this)}>Save</button> </div> :
+            <div><div><button id = "largeButton" type="button" className="btn btn-outline-success" onClick={() => this.arrangeShipsRandom.bind(this)(true)}>
+              Расставить корабли автоматически</button></div>
+              <br></br>
+              <div><button type="button" className="btn btn-outline-danger" onClick={this.start.bind(this)}>
+                Старт</button></div><br></br>
+              <button type="button" className="btn btn-outline-success" onClick={this.onContinue.bind(this)}>Continue</button></div>}
+        </div>
       </div>
     );
   }

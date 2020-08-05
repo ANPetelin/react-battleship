@@ -39,7 +39,7 @@
 
 .battleship_field {
   display: grid;
-  grid-template-columns: 40% 40%;
+  grid-template-columns: 45% 45%;
   grid-gap: 1em;
 }
 
@@ -47,4 +47,8 @@
   margin: 10px;
   text-align: center;
   grid-column: 1/3;
+}
+
+#largeButton {
+  width: 300px;
 }
